@@ -29,7 +29,7 @@ result = [t for t in stemmed if t not in stops]
 # print("This is Step4's result : \n")
 print(result)
 
-fout = open("result.txt",'a');
+fout = open("result.txt",'w');
 for t in result:
 	fout.write(t)
 	fout.write("\n")
