@@ -3,22 +3,34 @@ from nltk import PorterStemmer
 from nltk.corpus import stopwords
 
 def input(path):
-	f = open(path,'r');
-	return f.read();
+	f = open(path,'r')
+	return f.read()
 
 
-s = input("28.txt");
-ignored = ['\'',',','.'];
+s = input("28.txt")
+ignored = ['\'',',','.']
 
 for c in ignored:
-	s = s.replace(c,"");
+	s = s.replace(c,"")
+# print("This is Step1's result : \n")
+# print(s)
 
+tokens = word_tokenize(s.lower())
+# print("This is Step2's result : \n")
+# print(tokens);
 
-tokens = word_tokenize(s.lower());
-porter = PorterStemmer();
+porter = PorterStemmer()
 stemmed = [porter.stem(t) for t in tokens];
-print(stemmed);
+# print("This is Step3's result : \n")
+# print(stemmed);
 
 stops = set(stopwords.words('english'))
-print([t for t in stemmed if t not in stops])
+result = [t for t in stemmed if t not in stops]
+# print("This is Step4's result : \n")
+print(result)
 
+fout = open("result.txt",'a');
+for t in result:
+	fout.write(t)
+	fout.write("\n")
+	
