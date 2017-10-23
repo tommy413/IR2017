@@ -10,7 +10,7 @@ def input(path):
 
 def tokenizer(path):
 	s = input(path)
-	ignored = ['\'',',','.']
+	ignored = [':','\\','/','*',',','.']
 
 	for c in ignored:
 		s = s.replace(c,"")
@@ -27,9 +27,9 @@ def tokenizer(path):
 	# print(stemmed);
 
 	stops = set(stopwords.words('english'))
-	result = [t for t in stemmed if (t not in stops) and (re.match("^[a-zA-Z]+-?[a-zA-Z].",t))]
+	result = [t for t in stemmed if (t not in stops) and (re.match("^[a-zA-Z]+[-']?[a-zA-Z]?",t))]
 	# print("This is Step4's result : \n")
 	# print(result)
 
-	return set(result)
+	return result
 	
