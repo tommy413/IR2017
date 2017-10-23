@@ -9,8 +9,8 @@ df = {}
 wordId = {}
 
 doc_num = len(os.listdir(corpus_path))
-print(doc_num)
 
+#make dictionary
 for path in os.listdir(corpus_path):
 	doc_dict = set(my_tokenizer.tokenizer(corpus_path + "/" + path))
 
@@ -19,9 +19,11 @@ for path in os.listdir(corpus_path):
 
 	dictionary = dictionary.union(doc_dict)
 
+print("Documents Total : %d" % doc_num)
 dictionary_list = sorted(list(dictionary))
-print(len(dictionary_list))
+print("Number of Terms : %d" % len(dictionary_list))
 
+#dictionary.txt output
 f = open("dictionary.txt", 'w')
 f.write("t_index\tterm\tdf\n")
 t_index = 1
@@ -30,10 +32,14 @@ for w in dictionary_list:
 	wordId[w] = t_index
 	t_index = t_index + 1
 
+print("Save dictionary.txt")
+
+#vectors output
 outputPath = "vectors/"
 if not (os.path.exists(outputPath)):
 	os.mkdir(outputPath)
 
+#count tf-idf and output
 for path in os.listdir(corpus_path):
 	docId = path.split(".")[0]
 	f = open("%s%s.txt" % (outputPath,docId) , 'w')
@@ -56,3 +62,4 @@ for path in os.listdir(corpus_path):
 	doc_rst.sort(key=lambda x: x[0])
 	for row in doc_rst:
 		f.write("%d\t%f\n" % (row[0],row[1]/math.sqrt(l) ) )
+print("Save Vectors of Document: %d" % len(os.listdir(outputPath)))

@@ -10,6 +10,7 @@ def doc_vectorize(x,y):
 	yList = yFile.split("\n")[:-1]
 
 	l = max(int(xList[-1].split("\t")[0]),int(yList[-1].split("\t")[0]))
+	print("Vector's length : %d" % l)
 
 	vx = np.zeros(l)
 	vy = np.zeros(l)
