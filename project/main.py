@@ -36,14 +36,14 @@ if __name__ == '__main__':
     MNB_model.predict(test_X,test_Y)
     analysis(args.data_name,"MNB")
 
-    # X,Y,Xval,Yval,test_X,test_Y,dictionary,maxlen,wordsize = get_data(args.data_name,split = True, to_onehot = True)
+    X,Y,Xval,Yval,test_X,test_Y,dictionary,maxlen,wordsize = get_data(args.data_name,split = True, to_onehot = True)
 
-    # CNN_model = IR_CNN(args,maxlen,wordsize)
-    # CNN_model.fit(X,Y,Xval,Yval)
-    # CNN_model.predict(test_X,test_Y)
+    CNN_model = IR_CNN(args,maxlen,wordsize)
+    CNN_model.fit(X,Y,Xval,Yval)
+    CNN_model.predict(test_X,test_Y)
     analysis(args.data_name,"CNN")
 
-    # RNN_model = IR_RNN(args,maxlen,wordsize)
-    # RNN_model.fit(X,Y,Xval,Yval)
-    # RNN_model.predict(test_X,test_Y)
+    RNN_model = IR_RNN(args,maxlen,wordsize)
+    RNN_model.fit(X,Y,Xval,Yval)
+    RNN_model.predict(test_X,test_Y)
     analysis(args.data_name,"RNN")

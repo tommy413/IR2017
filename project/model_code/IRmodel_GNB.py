@@ -15,6 +15,9 @@ class IR_GNB(IRmodel):
             self.model = self.load_model()
 
     def get_model(self):
+        if not (os.path.exists(os.path.join("model",self.data_name))):
+            os.makedirs(os.path.join("model",self.data_name))
+        
         clf = GaussianNB()
         with open(os.path.join("model",self.data_name,"GNB.pkl") , 'wb') as f:
             pickle.dump(clf, f, pickle.HIGHEST_PROTOCOL)

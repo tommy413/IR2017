@@ -6,7 +6,7 @@ import json
 import keras.models as kmodels
 import keras.layers as klayers
 # from keras.layers.core import Dense, Dropout, Activation
-# from keras.layers import Conv1D, Conv2D, Conv3D, Reshape, Flatten, Bidirectional, TimeDistributed, GRU
+from keras.layers import Conv1D, MaxPooling1D
 from keras.optimizers import SGD, Adam
 from keras.utils import np_utils
 from keras.models import load_model,model_from_json
@@ -25,8 +25,15 @@ class IR_RNN(IRmodel):
             os.makedirs(os.path.join("model",self.data_name))
 
         model = kmodels.Sequential()
-        model.add(klayers.Embedding(word_size+1, 128, input_length = maxlen))
-        model.add(klayers.LSTM(128))
+        model.add(klayers.Embedding(word_size+1, 512, input_length = maxlen))
+        model.add(Conv1D(512, 2, padding='valid'))
+        model.add(MaxPooling1D(2, padding='valid'))
+
+        model.add(klayers.LSTM(256,return_sequences = True))
+        # model.add(klayers.LSTM(256,return_sequences = True))
+        model.add(klayers.Flatten())
+        model.add(klayers.Dense(512))
+        model.add(klayers.Dense(128))
         model.add(klayers.Dense(13, activation='softmax'))
 
         model.compile(loss='categorical_crossentropy',

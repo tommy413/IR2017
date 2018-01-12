@@ -1,6 +1,8 @@
 import csv
 import os
 
+emotions = ["anger",'boredom','empty','enthusiasm','fun','happiness','hate','love','neutral','relief','sadness','surprise','worry']
+
 def precision(true,pred):
     class_dict = {}
     acc_dict = {}
@@ -63,18 +65,31 @@ def plot_cm(true,pred,img_path):
     import pandas as pd
     import matplotlib.pyplot as plt
 
-    array = [[0 for i in range(0,13)] for j in range(0,13)]
+    array = [[0.0 for i in range(0,13)] for j in range(0,13)]
 
     for i in range(0,len(true)):
-        array[true[i]][pred[i]] = array[true[i]][pred[i]] + 1
+        array[true[i]][pred[i]] = array[true[i]][pred[i]] + 1.0
 
-    df_cm = pd.DataFrame(array, range(13),
-                  range(13))
+    sum_array = [0 for i in range(0,13)]
+    for i in range(0,13):
+        for j in range(0,13):
+            sum_array[i] += array[i][j]
+
+    for i in range(0,13):
+        for j in range(0,13):
+            array[i][j] = round(array[i][j]/sum_array[i], 2)
+
+    df_cm = pd.DataFrame(array, emotions,
+                  emotions)
     #plt.figure(figsize = (10,7))
     fig = None
     ax = None
     sn.set(font_scale=1.4)#for label size
-    ax = sn.heatmap(df_cm, annot=True,annot_kws={"size": 16})# font size
+    ax = sn.heatmap(df_cm, annot=True,annot_kws={"size": 12})# font size
+    for tick in ax.get_xticklabels():
+        tick.set_rotation(45)
+    for tick in ax.get_yticklabels():
+        tick.set_rotation(45)
     fig = ax.get_figure()
     fig.savefig(img_path)
     plt.clf()
@@ -105,3 +120,4 @@ def analysis(data_name,model_name):
     meta_wf.writerow(["Micro_f" ,micro_f])
 
     plot_cm(gtrue,pred,os.path.join(result_path,"%s_confusion_matrix.png" % model_name))
+

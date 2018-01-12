@@ -15,12 +15,14 @@ def split_data(X_data,Y_data,split_ratio):
     return (X_data[ix_train],Y_data[ix_train]),(X_data[ix_val],Y_data[ix_val])
 
 def padding(arr,maxlen):
+    new_arr = []
     for line in arr:
         while len(line) < maxlen:
             line.append(0)
         if len(line) > maxlen:
             line = line[:maxlen]
-    return arr
+        new_arr.append(line)
+    return new_arr
 
 def get_data(data_name,split = True, to_onehot = True):
     data_path = os.path.join("dataset",data_name)
@@ -67,6 +69,7 @@ def get_data(data_name,split = True, to_onehot = True):
     if to_onehot:
         Y = to_categorical(Y,num_classes=13)
 
+    print(wordsize)
     if split :
         (X,Y),(Xval,Yval) = split_data(X,Y,0.2)
 

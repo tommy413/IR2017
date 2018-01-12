@@ -6,7 +6,7 @@ import json
 import keras.models as kmodels
 import keras.layers as klayers
 # from keras.layers.core import Dense, Dropout, Activation, TimeDistributed
-from keras.layers import  Conv2D, Reshape, Flatten, Dropout
+from keras.layers import  Conv1D,Conv2D, Reshape, Flatten, Dropout, MaxPooling1D
 from keras.optimizers import SGD, Adam
 from keras.utils import np_utils
 from keras.models import load_model,model_from_json
@@ -25,13 +25,19 @@ class IR_CNN(IRmodel):
             os.makedirs(os.path.join("model",self.data_name))
 
         model = kmodels.Sequential()
-        model.add(klayers.Embedding(word_size+1, 128, input_length = maxlen))
-        model.add(Reshape( (-1,128,1) ) )
-        model.add(Conv2D(512, (4,128),strides=(2,128),padding='valid', activation='relu'))
-        model.add(Dropout(0.2))
-        model.add(Conv2D(256, (2,1),padding='valid', activation='relu'))
-        model.add(Dropout(0.2))
+        model.add(klayers.Embedding(word_size+1, 512, input_length = maxlen))
+
+        # model.add(Conv1D(256, 3, padding='valid'))
+        model.add(Conv1D(512, 2, padding='valid'))
+        model.add(MaxPooling1D(2, padding='valid'))
+        model.add(Conv1D(1024, 2, padding='valid'))
+
         model.add(Flatten())
+        model.add(Dropout(0.2))
+        model.add(klayers.Dense(512))
+        # model.add(Dropout(0.2))
+        model.add(klayers.Dense(128))
+        # model.add(Dropout(0.2))
         model.add(klayers.Dense(13, activation='softmax'))
 
         model.compile(loss='categorical_crossentropy',
@@ -41,7 +47,7 @@ class IR_CNN(IRmodel):
             json.dump(model.to_json(), f)
 
         model.summary()
-        earlystopping = EarlyStopping(monitor='val_loss', patience = 5, verbose=1, mode='min')
+        earlystopping = EarlyStopping(monitor='val_loss', patience = 3, verbose=1, mode='min')
         checkpoint = ModelCheckpoint(filepath=os.path.join("model",self.data_name,"CNN_model_weight.hdf5"),
                                      verbose=1,
                                      save_best_only=True,
