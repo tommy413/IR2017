@@ -18,24 +18,30 @@ def padding(arr,maxlen):
     for line in arr:
         while len(line) < maxlen:
             line.append(0)
+        if len(line) > maxlen:
+            line = line[:maxlen]
     return arr
 
-def get_data(data_name):
+def get_data(data_name,split = True, to_onehot = True):
     data_path = os.path.join("dataset",data_name)
 
     dict_file = open(os.path.join(data_path,"dictionary.csv"),'r')
     data_file = open(os.path.join(data_path,"traindata.csv"),'r')
+    test_file = open(os.path.join(data_path,"testdata.csv"),'r')
 
     dict_wf = csv.reader(dict_file)
     data_wf = csv.reader(data_file)
+    test_wf = csv.reader(test_file)
 
     dictionary = dict()
     for line in list(dict_wf)[1:]:
         dictionary[int(line[0])] = line[1]
+    wordsize = len(dictionary.keys())
 
     X = []
     Y = []
-    raw_Y = []
+    test_X = []
+    test_Y = []
     maxlen = 0
     for line in list(data_wf)[1:]:
         docid = int(line[0])
@@ -44,14 +50,26 @@ def get_data(data_name):
         maxlen = max(maxlen,len(sen))
         X.append(sen)
         Y.append(label)
-        raw_Y.append([docid,label])
+
+    for line in list(test_wf)[1:]:
+        docid = int(line[0])
+        label = int(line[1])
+        sen = [int(x) for x in line[2:]]
+        test_X.append(sen)
+        test_Y.append([docid,label])
 
     X = padding(X,maxlen)
+    test_X = padding(test_X,maxlen)
 
     X = np.array(X)
+    test_X = np.array(test_X)
     Y = np.array(Y)
-    Y = to_categorical(Y,num_classes=13)
+    if to_onehot:
+        Y = to_categorical(Y,num_classes=13)
 
-    (X,Y),(Xval,Yval) = split_data(X,Y,0.2)
+    if split :
+        (X,Y),(Xval,Yval) = split_data(X,Y,0.2)
 
-    return X,Y,Xval,Yval,raw_Y,dictionary,maxlen
+        return X,Y,Xval,Yval,test_X,test_Y,dictionary,maxlen,wordsize
+    else :
+        return X,Y,test_X,test_Y,dictionary,maxlen,wordsize

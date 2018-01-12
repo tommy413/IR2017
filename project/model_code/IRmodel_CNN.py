@@ -5,14 +5,14 @@ import json
 
 import keras.models as kmodels
 import keras.layers as klayers
-# from keras.layers.core import Dense, Dropout, Activation
-# from keras.layers import Conv1D, Conv2D, Conv3D, Reshape, Flatten, Bidirectional, TimeDistributed, GRU
+# from keras.layers.core import Dense, Dropout, Activation, TimeDistributed
+from keras.layers import  Conv2D, Reshape, Flatten, Dropout
 from keras.optimizers import SGD, Adam
 from keras.utils import np_utils
 from keras.models import load_model,model_from_json
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 
-class IR_RNN(IRmodel):
+class IR_CNN(IRmodel):
     def __init__(self,args,maxlen,word_size):
         self.data_name = args.data_name
         if args.train:
@@ -26,18 +26,23 @@ class IR_RNN(IRmodel):
 
         model = kmodels.Sequential()
         model.add(klayers.Embedding(word_size+1, 128, input_length = maxlen))
-        model.add(klayers.LSTM(128))
+        model.add(Reshape( (-1,128,1) ) )
+        model.add(Conv2D(512, (4,128),strides=(2,128),padding='valid', activation='relu'))
+        model.add(Dropout(0.2))
+        model.add(Conv2D(256, (2,1),padding='valid', activation='relu'))
+        model.add(Dropout(0.2))
+        model.add(Flatten())
         model.add(klayers.Dense(13, activation='softmax'))
 
         model.compile(loss='categorical_crossentropy',
                       optimizer='adam',
                       metrics=['accuracy'])
-        with open(os.path.join("model",self.data_name,"RNN.json") , 'w') as f:
+        with open(os.path.join("model",self.data_name,"CNN.json") , 'w') as f:
             json.dump(model.to_json(), f)
 
         model.summary()
-        earlystopping = EarlyStopping(monitor='val_loss', patience = 3, verbose=1, mode='min')
-        checkpoint = ModelCheckpoint(filepath=os.path.join("model",self.data_name,"RNN_model_weight.hdf5"),
+        earlystopping = EarlyStopping(monitor='val_loss', patience = 5, verbose=1, mode='min')
+        checkpoint = ModelCheckpoint(filepath=os.path.join("model",self.data_name,"CNN_model_weight.hdf5"),
                                      verbose=1,
                                      save_best_only=True,
                                      save_weights_only=True,
@@ -46,8 +51,8 @@ class IR_RNN(IRmodel):
         return model,earlystopping,checkpoint
 
     def load_model(self):
-        model = model_from_json(json.load(os.path.join("model",self.data_name,"RNN.json")))
-        model.load_weights(os.path.join("model",self.data_name,"RNN_model_weight.hdf5"))
+        model = model_from_json(json.load(os.path.join("model",self.data_name,"CNN.json")))
+        model.load_weights(os.path.join("model",self.data_name,"CNN_model_weight.hdf5"))
         model.compile(loss='categorical_crossentropy',
                       optimizer='adam',
                       metrics=['accuracy'])
@@ -61,20 +66,20 @@ class IR_RNN(IRmodel):
                     epochs=500, 
                     batch_size=50,
                     callbacks=[self.earlystopping,self.checkpoint])
-        self.model.load_weights(os.path.join("model",self.data_name,"RNN_model_weight.hdf5"))
+        self.model.load_weights(os.path.join("model",self.data_name,"CNN_model_weight.hdf5"))
         self.model.fit(Xval, Yval, 
                     validation_data=(X, Y),
                     epochs=500, 
                     batch_size=50,
                     callbacks=[self.earlystopping,self.checkpoint])
-        self.model.load_weights(os.path.join("model",self.data_name,"RNN_model_weight.hdf5"))
+        self.model.load_weights(os.path.join("model",self.data_name,"CNN_model_weight.hdf5"))
 
     def predict(self,X,raw_Y):
         import csv
 
         if not (os.path.exists(os.path.join("result",self.data_name))):
             os.makedirs(os.path.join("result",self.data_name))
-        f = open(os.path.join("result",self.data_name,"RNN.csv"),'w')
+        f = open(os.path.join("result",self.data_name,"CNN.csv"),'w')
         wf = csv.writer(f)
 
         result = self.model.predict_classes(X)
