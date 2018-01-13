@@ -25,18 +25,18 @@ class IR_CNN(IRmodel):
             os.makedirs(os.path.join("model",self.data_name))
 
         model = kmodels.Sequential()
-        model.add(klayers.Embedding(word_size+1, 512, input_length = maxlen))
+        model.add(klayers.Embedding(word_size+1, 32, input_length = maxlen))
 
         # model.add(Conv1D(256, 3, padding='valid'))
-        model.add(Conv1D(512, 2, padding='valid'))
-        model.add(MaxPooling1D(2, padding='valid'))
-        model.add(Conv1D(1024, 2, padding='valid'))
+        model.add(Conv1D(32, 3, padding='same', activation = "relu"))
+        model.add(MaxPooling1D(2, padding='same'))
+        model.add(Conv1D(64, 2, padding='same', activation = "relu"))
 
         model.add(Flatten())
-        model.add(Dropout(0.2))
-        model.add(klayers.Dense(512))
         # model.add(Dropout(0.2))
-        model.add(klayers.Dense(128))
+        model.add(klayers.Dense(64, activation = "relu"))
+        # model.add(Dropout(0.2))
+        # model.add(klayers.Dense(128))
         # model.add(Dropout(0.2))
         model.add(klayers.Dense(13, activation='softmax'))
 
