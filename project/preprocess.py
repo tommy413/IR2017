@@ -48,7 +48,7 @@ def get_data(data_name,split = True, to_onehot = True):
     for line in list(data_wf)[1:]:
         docid = int(line[0])
         label = int(line[1])
-        sen = [int(x) for x in line[2:]]
+        sen = [int(x) for x in line[2:] if x != '']
         maxlen = max(maxlen,len(sen))
         X.append(sen)
         Y.append(label)
@@ -56,7 +56,7 @@ def get_data(data_name,split = True, to_onehot = True):
     for line in list(test_wf)[1:]:
         docid = int(line[0])
         label = int(line[1])
-        sen = [int(x) for x in line[2:]]
+        sen = [int(x) for x in line[2:] if x != '']
         test_X.append(sen)
         test_Y.append([docid,label])
 
