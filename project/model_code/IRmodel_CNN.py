@@ -33,7 +33,7 @@ class IR_CNN(IRmodel):
         model.add(Conv1D(64, 2, padding='same', activation = "relu"))
 
         model.add(Flatten())
-        # model.add(Dropout(0.2))
+        model.add(Dropout(0.2))
         model.add(klayers.Dense(64, activation = "relu"))
         # model.add(Dropout(0.2))
         # model.add(klayers.Dense(128))

@@ -29,7 +29,7 @@ class IR_RNN(IRmodel):
         model.add(Conv1D(32, 3, padding='same', activation = "relu"))
         model.add(MaxPooling1D(2, padding='same'))
 
-        model.add(klayers.LSTM(100,return_sequences = True))
+        model.add(klayers.LSTM(100,return_sequences = True,recurrent_dropout=0.2, dropout=0.2))
         # model.add(klayers.LSTM(256,return_sequences = True))
         model.add(klayers.Flatten())
         model.add(klayers.Dense(64, activation = "relu"))
